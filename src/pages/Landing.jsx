@@ -1,9 +1,9 @@
 import React from "react";
-import Navbar from "../components/Navbar";
-import HeroSection from "../components/HeroSection";
-import HowItWorks from "../components/HowItWorks";
-import Footer from "../components/Footer";
-import ScrollToTopButton from "../components/ScrollToTopButton";
+import Navbar from "../components/common/Navbar";
+import HeroSection from "../components/Landing/HeroSection";
+import HowItWorks from "../components/Landing/HowItWorks";
+import Footer from "../components/common/Footer";
+import ScrollToTopButton from "../components/common/ScrollToTopButton";
 
 const Landing = () => {
   return (
