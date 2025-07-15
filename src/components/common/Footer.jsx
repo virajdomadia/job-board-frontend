@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import logo from "../../assets/logo.png";
 
 const Footer = () => {
   return (
@@ -14,9 +15,11 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 text-center md:text-left">
         {/* Brand + Copyright */}
         <div>
-          <h1 className="text-indigo-600 text-xl font-bold">JobBoard</h1>
+          <h1 className="text-indigo-600 text-xl font-bold">
+            <img src={logo} alt="JobBoard" className="h-10" />
+          </h1>
           <p className="text-gray-500 text-sm mt-1">
-            © 2025 JobBoard. All rights reserved.
+            © 2025 SmartJobFit AI. All rights reserved.
           </p>
         </div>
 

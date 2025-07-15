@@ -1,11 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import logo from "../../assets/logo.png";
 
 const Navbar = () => {
   return (
     <motion.nav
-      className="flex items-center justify-between px-6 py-4 bg-white shadow-lg fixed w-full z-50 rounded-b-xl border-b"
+      className="flex items-center justify-between px-14 py-4 bg-white shadow-lg fixed w-full z-50 rounded-b-xl border-b"
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 80, damping: 15 }}
@@ -15,7 +16,7 @@ const Navbar = () => {
         className="text-2xl font-extrabold text-indigo-600 hover:scale-105 transition-transform cursor-pointer"
         whileHover={{ scale: 1.1 }}
       >
-        JobBoard
+        <img src={logo} alt="" className="h-14" />
       </motion.h1>
 
       {/* Auth Buttons */}
