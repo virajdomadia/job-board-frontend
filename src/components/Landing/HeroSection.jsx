@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Typewriter } from "react-simple-typewriter";
 import Lottie from "lottie-react";
-import heroAnimation from "../assets/hero-animation.json"; // replace with your Lottie file
+import heroAnimation from "../../assets/hero-animation.json"; // replace with your Lottie file
 
 const HeroSection = () => {
   return (
