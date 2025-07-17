@@ -4,6 +4,7 @@ import Footer from "../components/common/Footer";
 import JobForm from "../components/Job/JobForm";
 import toast from "react-hot-toast";
 import { createJob } from "../services/jobApi";
+import JobList from "../components/Job/JobList";
 
 const EmployerDashboard = () => {
   const handleCreateJob = async (formData) => {
@@ -20,6 +21,7 @@ const EmployerDashboard = () => {
     <>
       <Navbar />
       <JobForm onSubmit={handleCreateJob} />
+      <JobList />
       <Footer />
     </>
   );
