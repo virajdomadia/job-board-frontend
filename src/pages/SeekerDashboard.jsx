@@ -18,6 +18,12 @@ const SeekerDashboard = () => {
 
   useEffect(() => {
     fetchJobs();
+
+    const interval = setInterval(() => {
+      fetchJobs();
+    }, 60000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (

@@ -28,7 +28,7 @@ const EmployerDashboard = () => {
       const res = await createJob(formData);
       toast.success("Job posted successfully!");
       console.log("Created Job:", res.data.job);
-      // You can also trigger a job list refresh or redirect here
+      fetchJobs();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to post job");
     }
