@@ -1,12 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import JobForm from "../components/Job/JobForm";
 import toast from "react-hot-toast";
-import { createJob } from "../services/jobApi";
+import { createJob, getJobs } from "../services/jobApi";
 import JobList from "../components/Job/JobList";
 
 const EmployerDashboard = () => {
+  const [jobs, setJobs] = useState([]);
+
+  const fetchJobs = async () => {
+    try {
+      const res = await getJobs();
+      setJobs(res.data.jobs);
+      toast.success("Jobs fetched successfully!");
+    } catch (error) {
+      toast.error("Failed to fetch jobs.");
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
   const handleCreateJob = async (formData) => {
     try {
       const res = await createJob(formData);
@@ -21,7 +37,7 @@ const EmployerDashboard = () => {
     <>
       <Navbar />
       <JobForm onSubmit={handleCreateJob} />
-      <JobList />
+      <JobList jobs={jobs} />
       <Footer />
     </>
   );

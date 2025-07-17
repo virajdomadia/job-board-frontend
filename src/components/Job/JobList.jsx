@@ -1,24 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { getJobs } from "../../services/jobApi";
-import toast from "react-hot-toast";
+import React, { useState } from "react";
 
-const JobList = () => {
-  const [jobs, setJobs] = useState([]);
+const JobList = ({ jobs }) => {
   const [layout, setLayout] = useState("grid");
-
-  const fetchJobs = async () => {
-    try {
-      const res = await getJobs();
-      setJobs(res.data.jobs);
-      toast.success("Jobs fetched successfully!");
-    } catch (error) {
-      toast.error("Failed to fetch jobs.");
-    }
-  };
-
-  useEffect(() => {
-    fetchJobs();
-  }, []);
 
   if (!jobs.length) {
     return <div className="text-center">No jobs available at the moment.</div>;
@@ -27,7 +10,6 @@ const JobList = () => {
     <>
       <div className="mt-8 p-4">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Your Posted Jobs</h2>
           <div className="flex border rounded overflow-hidden">
             <button
               onClick={() => setLayout("list")}
