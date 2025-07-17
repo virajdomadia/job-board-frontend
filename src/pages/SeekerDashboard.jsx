@@ -3,6 +3,7 @@ import JobList from "../components/Job/JobList";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import { getJobs } from "../services/jobApi";
+import { useJobContext } from "../context/JobContext";
 
 const SeekerDashboard = () => {
   const { jobs } = useJobContext();
