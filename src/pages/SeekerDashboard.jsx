@@ -5,26 +5,7 @@ import Footer from "../components/common/Footer";
 import { getJobs } from "../services/jobApi";
 
 const SeekerDashboard = () => {
-  const [jobs, setJobs] = useState([]);
-  const fetchJobs = async () => {
-    try {
-      const res = await getJobs();
-      setJobs(res.data.jobs);
-      toast.success("Jobs fetched successfully!");
-    } catch (error) {
-      toast.error("Failed to fetch jobs.");
-    }
-  };
-
-  useEffect(() => {
-    fetchJobs();
-
-    const interval = setInterval(() => {
-      fetchJobs();
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { jobs } = useJobContext();
 
   return (
     <>
