@@ -71,6 +71,13 @@ const JobList = () => {
               <p>💰 Salary: ₹{job.salary}</p>
               <p className="text-gray-700">{job.description}</p>
               <p className="text-sm text-gray-500">Type: {job.type}</p>
+
+              {/* 👇 Only show employer name if present (i.e. seeker view) */}
+              {job.employerId?.name && (
+                <p className="text-sm text-gray-400 italic">
+                  Posted by: {job.employerId.name}
+                </p>
+              )}
             </div>
           ))}
         </div>
