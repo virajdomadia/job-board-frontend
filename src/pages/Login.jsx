@@ -20,7 +20,14 @@ const Login = () => {
       const res = await api.login(form);
       login(res.data);
       toast.success("Welcome back!");
-      navigate("/dashboard");
+      const role = res.data.user.role;
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("token", res.data.token);
+      if (role === "seeker") {
+        navigate("/seeker");
+      } else if (role === "employer") {
+        navigate("/employer");
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     }

@@ -3,8 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SeekerDashboard from "./pages/SeekerDashboard";
+import EmployerDashboard from "./pages/EmployerDashboard";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -15,15 +17,24 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route
-            path="/dashboard"
+            path="/seeker"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <SeekerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employer"
+            element={
+              <ProtectedRoute>
+                <EmployerDashboard />
               </ProtectedRoute>
             }
           />
         </Routes>
       </Router>
+      <Toaster position="top-right" reverseOrder={false} />
     </>
   );
 }

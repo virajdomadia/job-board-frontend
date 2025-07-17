@@ -23,9 +23,16 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.register(form); // ✅ Make sure it's api.register not Register()
+      const res = await api.register(form);
       toast.success("Registration successful!");
-      navigate("/dashboard");
+      const role = res.data.user.role;
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("token", res.data.token);
+      if (role === "seeker") {
+        navigate("/seeker");
+      } else if (role === "employer") {
+        navigate("/employer");
+      }
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Registration failed. Try again."
