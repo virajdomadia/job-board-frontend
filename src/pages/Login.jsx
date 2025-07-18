@@ -2,13 +2,13 @@ import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../services/api";
-import { AuthContext } from "../context/AuthContext";
+import { useAuthContext } from "../context/AuthContext";
 import illustration from "../assets/hero-animation.json"; // Adjust the path as necessary
 import { Player } from "@lottiefiles/react-lottie-player";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
-  const { login } = useContext(AuthContext);
+  const { login } = useAuthContext();
   const navigate = useNavigate();
 
   const handleChange = (e) =>

@@ -1,6 +1,6 @@
 // src/context/JobContext.js
 import { createContext, useContext, useState, useEffect } from "react";
-import { getJobs, createJob } from "../services/jobApi";
+import { getJobs, createJob, updateJob, deleteJob } from "../services/jobApi";
 import toast from "react-hot-toast";
 
 const JobContext = createContext();
@@ -29,12 +29,36 @@ export const JobProvider = ({ children }) => {
     }
   };
 
+  const updateJob = async (id, formData) => {
+    try {
+      const res = await updateJob(id, formData); // Assuming createJob can handle updates
+      setJobs((prev) =>
+        prev.map((job) => (job._id === id ? res.data.job : job))
+      );
+      toast.success("Job updated successfully!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update job.");
+    }
+  };
+
+  const deleteJob = async (id) => {
+    try {
+      await deleteJob(id); // Assuming deleteJob is defined in jobApi
+      setJobs((prev) => prev.filter((job) => job._id !== id));
+      toast.success("Job deleted successfully!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete job.");
+    }
+  };
+
   useEffect(() => {
     fetchJobs();
   }, []);
 
   return (
-    <JobContext.Provider value={{ jobs, fetchJobs, postJob }}>
+    <JobContext.Provider
+      value={{ jobs, fetchJobs, postJob, updateJob, deleteJob }}
+    >
       {children}
     </JobContext.Provider>
   );

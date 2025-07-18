@@ -2,10 +2,10 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import logo from "../../assets/logo.png";
-import { AuthContext } from "../../context/AuthContext";
+import { useAuthContext } from "../../context/AuthContext";
 
 const Navbar = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } = useAuthContext();
   const navigate = useNavigate();
 
   const handleLogout = () => {
