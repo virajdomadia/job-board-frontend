@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useJobContext } from "../../context/JobContext";
 import { useAuthContext } from "../../context/AuthContext";
+import JobForm from "./JobForm"; // make sure the path is correct
 
 const JobList = ({ jobs }) => {
   const [layout, setLayout] = useState("grid");
-  const { deleteJob } = useJobContext();
+  const [editingJobId, setEditingJobId] = useState(null); // holds ID of job being edited
+  const { deleteJob, updateJob } = useJobContext(); // make sure updateJob exists in your context
   const { user } = useAuthContext();
 
-  const loggedInUser = user?.user; // 👈 fix: actual user data
+  const loggedInUser = user?.user;
   const userId = loggedInUser?.id;
 
-  // Debugging log
   useEffect(() => {
     console.log("🔐 Logged in user:", loggedInUser);
     console.log("📦 Jobs received:", jobs);
@@ -35,11 +36,16 @@ const JobList = ({ jobs }) => {
 
   const handleEdit = (job) => {
     console.log("✏️ Editing job:", job);
-    // Implement navigation or modal for editing here
+    setEditingJobId(job._id); // open the edit form for this job
+  };
+
+  const handleUpdate = async (updatedData) => {
+    console.log("💾 Submitting update for job:", editingJobId);
+    await updateJob(editingJobId, updatedData); // context should have this
+    setEditingJobId(null); // hide the form after update
   };
 
   if (!jobs.length) {
-    console.log("❌ No jobs to display");
     return <div className="text-center">No jobs available at the moment.</div>;
   }
 
@@ -79,6 +85,8 @@ const JobList = ({ jobs }) => {
       >
         {jobs.map((job) => {
           const owner = isOwner(job);
+          const isEditing = editingJobId === job._id;
+
           return (
             <div
               key={job._id}
@@ -111,6 +119,18 @@ const JobList = ({ jobs }) => {
                     className="text-red-500 hover:underline"
                   >
                     Delete
+                  </button>
+                </div>
+              )}
+
+              {isEditing && (
+                <div className="mt-4">
+                  <JobForm isEdit initialData={job} onSubmit={handleUpdate} />
+                  <button
+                    className="mt-2 text-gray-500 hover:underline text-sm"
+                    onClick={() => setEditingJobId(null)}
+                  >
+                    Cancel Edit
                   </button>
                 </div>
               )}
