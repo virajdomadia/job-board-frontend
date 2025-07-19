@@ -32,7 +32,7 @@ const Navbar = () => {
         {user ? (
           <>
             {/* Role-specific link */}
-            {user.role === "employer" && (
+            {user?.role === "employer" && (user?.id || user?._id) && (
               <Link
                 to="/employer"
                 className="text-gray-700 hover:text-indigo-700 font-semibold"
@@ -40,7 +40,7 @@ const Navbar = () => {
                 Employer Dashboard
               </Link>
             )}
-            {user.role === "seeker" && (
+            {user?.role === "seeker" && (user?.id || user?._id) && (
               <Link
                 to="/seeker"
                 className="text-gray-700 hover:text-indigo-700 font-semibold"

@@ -1,49 +1,80 @@
 import React, { useState, useEffect } from "react";
 import { useJobContext } from "../../context/JobContext";
 import { useAuthContext } from "../../context/AuthContext";
-import JobForm from "./JobForm"; // make sure the path is correct
+import JobForm from "./JobForm";
+import toast from "react-hot-toast";
 
 const JobList = ({ jobs }) => {
   const [layout, setLayout] = useState("grid");
-  const [editingJobId, setEditingJobId] = useState(null); // holds ID of job being edited
-  const { deleteJob, updateJob } = useJobContext(); // make sure updateJob exists in your context
+  const [editingJobId, setEditingJobId] = useState(null);
+  const { deleteJob, updateJob, fetchJobs } = useJobContext(); // ✅ FIXED
   const { user } = useAuthContext();
 
-  const loggedInUser = user?.user;
+  const loggedInUser = user;
   const userId = loggedInUser?.id;
+
+  // Handle edge case where user hasn't loaded yet
+  if (!user || !loggedInUser) {
+    return <div className="text-center py-10">Loading user data...</div>;
+  }
 
   useEffect(() => {
     console.log("🔐 Logged in user:", loggedInUser);
     console.log("📦 Jobs received:", jobs);
   }, [loggedInUser, jobs]);
 
+  // ✅ FIXED: Normalize employerId check
   const isOwner = (job) => {
-    const match =
-      loggedInUser?.role === "employer" && job.employerId?._id === userId;
+    const jobEmployerId = job.employerId?._id || job.employerId;
+    const match = loggedInUser?.role === "employer" && jobEmployerId === userId;
     console.log(`🔍 Checking ownership for job ${job._id}`);
-    console.log("Job.employerId._id:", job.employerId?._id);
+    console.log("Job.employerId:", jobEmployerId);
     console.log("User._id:", userId);
     console.log("Is owner?", match);
     return match;
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this job?")) {
-      console.log("🗑 Deleting job with ID:", id);
-      deleteJob(id);
+      try {
+        console.log("🗑 Deleting job with ID:", id);
+        await deleteJob(id);
+        await fetchJobs(); // ✅ Refresh jobs
+        toast.success("Job deleted successfully!");
+      } catch (error) {
+        toast.error("Failed to delete job.");
+        console.error(error);
+      }
     }
   };
 
   const handleEdit = (job) => {
     console.log("✏️ Editing job:", job);
-    setEditingJobId(job._id); // open the edit form for this job
+    setEditingJobId(job._id);
   };
 
   const handleUpdate = async (updatedData) => {
-    console.log("💾 Submitting update for job:", editingJobId);
-    await updateJob(editingJobId, updatedData); // context should have this
-    setEditingJobId(null); // hide the form after update
+    try {
+      console.log("💾 Submitting update for job:", editingJobId);
+      await updateJob(editingJobId, updatedData);
+      setEditingJobId(null);
+      await fetchJobs(); // ✅ Refresh jobs
+      toast.success("Job updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update job.");
+      console.error(error);
+    }
   };
+
+  // ✅ Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("⏱ Auto-refreshing jobs...");
+      fetchJobs();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [fetchJobs]);
 
   if (!jobs.length) {
     return <div className="text-center">No jobs available at the moment.</div>;
@@ -74,6 +105,14 @@ const JobList = ({ jobs }) => {
             Grid
           </button>
         </div>
+
+        {/* ✅ Manual Refresh Button */}
+        <button
+          onClick={fetchJobs}
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          🔄 Refresh Jobs
+        </button>
       </div>
 
       <div
