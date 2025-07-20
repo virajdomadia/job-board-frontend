@@ -4,8 +4,8 @@ export const createJob = (data) => {
   return api.post("/jobs", data);
 };
 
-export const getJobs = () => {
-  return api.get("/jobs");
+export const getJobs = (params = {}) => {
+  return api.get("/jobs", { params });
 };
 
 export const getJobById = (id) => {

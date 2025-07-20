@@ -1,4 +1,3 @@
-// src/context/JobContext.js
 import { createContext, useContext, useState, useEffect } from "react";
 import {
   getJobs,
@@ -14,9 +13,9 @@ export const JobProvider = ({ children }) => {
   const [jobs, setJobs] = useState([]);
 
   // Fetch all jobs
-  const fetchJobs = async () => {
+  const fetchJobs = async (filters = {}) => {
     try {
-      const res = await getJobs();
+      const res = await getJobs(filters);
       setJobs(res.data.jobs);
     } catch (error) {
       toast.error("Failed to fetch jobs.");

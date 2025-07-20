@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { useJobContext } from "../../context/JobContext";
 import { useAuthContext } from "../../context/AuthContext";
 import JobForm from "./JobForm";
 import toast from "react-hot-toast";
 
-const JobList = ({ jobs }) => {
+const JobList = ({ jobs, searchTerm }) => {
   const [layout, setLayout] = useState("grid");
   const [editingJobId, setEditingJobId] = useState(null);
   const { deleteJob, updateJob, fetchJobs } = useJobContext(); // ✅ FIXED
@@ -13,24 +13,13 @@ const JobList = ({ jobs }) => {
   const loggedInUser = user;
   const userId = loggedInUser?.id;
 
-  // Handle edge case where user hasn't loaded yet
   if (!user || !loggedInUser) {
     return <div className="text-center py-10">Loading user data...</div>;
   }
 
-  useEffect(() => {
-    console.log("🔐 Logged in user:", loggedInUser);
-    console.log("📦 Jobs received:", jobs);
-  }, [loggedInUser, jobs]);
-
-  // ✅ FIXED: Normalize employerId check
   const isOwner = (job) => {
     const jobEmployerId = job.employerId?._id || job.employerId;
     const match = loggedInUser?.role === "employer" && jobEmployerId === userId;
-    console.log(`🔍 Checking ownership for job ${job._id}`);
-    console.log("Job.employerId:", jobEmployerId);
-    console.log("User._id:", userId);
-    console.log("Is owner?", match);
     return match;
   };
 
@@ -39,7 +28,7 @@ const JobList = ({ jobs }) => {
       try {
         console.log("🗑 Deleting job with ID:", id);
         await deleteJob(id);
-        await fetchJobs(); // ✅ Refresh jobs
+        await fetchJobs();
         toast.success("Job deleted successfully!");
       } catch (error) {
         toast.error("Failed to delete job.");
@@ -58,7 +47,7 @@ const JobList = ({ jobs }) => {
       console.log("💾 Submitting update for job:", editingJobId);
       await updateJob(editingJobId, updatedData);
       setEditingJobId(null);
-      await fetchJobs(); // ✅ Refresh jobs
+      await fetchJobs();
       toast.success("Job updated successfully!");
     } catch (error) {
       toast.error("Failed to update job.");
@@ -66,7 +55,6 @@ const JobList = ({ jobs }) => {
     }
   };
 
-  // ✅ Auto-refresh every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       console.log("⏱ Auto-refreshing jobs...");
@@ -106,9 +94,8 @@ const JobList = ({ jobs }) => {
           </button>
         </div>
 
-        {/* ✅ Manual Refresh Button */}
         <button
-          onClick={fetchJobs}
+          onClick={() => fetchJobs()}
           className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
         >
           🔄 Refresh Jobs

@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import JobList from "../components/Job/JobList";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
-import { getJobs } from "../services/jobApi";
 import { useJobContext } from "../context/JobContext";
+import JobFilters from "../components/Job/JobFilters";
 
 const SeekerDashboard = () => {
-  const { jobs } = useJobContext();
+  const { jobs, fetchJobs } = useJobContext();
 
   return (
     <>
       <Navbar />
+      <JobFilters fetchJobs={fetchJobs} />
       <JobList jobs={jobs} />
       <Footer />
     </>
