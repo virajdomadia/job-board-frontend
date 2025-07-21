@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SeekerDashboard from "./pages/SeekerDashboard";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import { Toaster } from "react-hot-toast";
+import JobDetail from "./pages/JobDetail";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/job/:id" element={<JobDetail />} />
         </Routes>
       </Router>
       <Toaster position="top-right" reverseOrder={false} />

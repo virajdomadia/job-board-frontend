@@ -1,14 +1,16 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { useJobContext } from "../../context/JobContext";
 import { useAuthContext } from "../../context/AuthContext";
 import JobForm from "./JobForm";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const JobList = ({ jobs, searchTerm }) => {
   const [layout, setLayout] = useState("grid");
   const [editingJobId, setEditingJobId] = useState(null);
-  const { deleteJob, updateJob, fetchJobs } = useJobContext(); // ✅ FIXED
+  const { deleteJob, updateJob, fetchJobs } = useJobContext();
   const { user } = useAuthContext();
+  const navigate = useNavigate();
 
   const loggedInUser = user;
   const userId = loggedInUser?.id;
@@ -19,14 +21,12 @@ const JobList = ({ jobs, searchTerm }) => {
 
   const isOwner = (job) => {
     const jobEmployerId = job.employerId?._id || job.employerId;
-    const match = loggedInUser?.role === "employer" && jobEmployerId === userId;
-    return match;
+    return loggedInUser?.role === "employer" && jobEmployerId === userId;
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this job?")) {
       try {
-        console.log("🗑 Deleting job with ID:", id);
         await deleteJob(id);
         await fetchJobs();
         toast.success("Job deleted successfully!");
@@ -38,13 +38,11 @@ const JobList = ({ jobs, searchTerm }) => {
   };
 
   const handleEdit = (job) => {
-    console.log("✏️ Editing job:", job);
     setEditingJobId(job._id);
   };
 
   const handleUpdate = async (updatedData) => {
     try {
-      console.log("💾 Submitting update for job:", editingJobId);
       await updateJob(editingJobId, updatedData);
       setEditingJobId(null);
       await fetchJobs();
@@ -57,10 +55,8 @@ const JobList = ({ jobs, searchTerm }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("⏱ Auto-refreshing jobs...");
       fetchJobs();
     }, 30000);
-
     return () => clearInterval(interval);
   }, [fetchJobs]);
 
@@ -116,14 +112,16 @@ const JobList = ({ jobs, searchTerm }) => {
           return (
             <div
               key={job._id}
-              className="border p-4 rounded shadow-sm bg-white space-y-2 relative"
+              className="border p-4 rounded shadow-sm bg-white space-y-2 relative hover:shadow-md transition"
             >
-              <h3 className="text-lg font-semibold">{job.title}</h3>
+              <h3 className="text-lg font-semibold text-indigo-600">
+                {job.title}
+              </h3>
               <p>
                 {job.company} — {job.location}
               </p>
               <p>💰 Salary: ₹{job.salary}</p>
-              <p className="text-gray-700">{job.description}</p>
+              <p className="text-gray-700 line-clamp-3">{job.description}</p>
               <p className="text-sm text-gray-500">Type: {job.type}</p>
 
               {job.employerId?.name && (
@@ -132,8 +130,29 @@ const JobList = ({ jobs, searchTerm }) => {
                 </p>
               )}
 
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() => navigate(`/job/${job._id}`)}
+                  className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                >
+                  View Details
+                </button>
+
+                {loggedInUser.role === "seeker" && (
+                  <button
+                    onClick={() => toast.success("Apply Now clicked!")}
+                    className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                  >
+                    Apply Now
+                  </button>
+                )}
+              </div>
+
               {owner && (
-                <div className="absolute top-2 right-2 flex gap-2">
+                <div
+                  className="absolute top-2 right-2 flex gap-2 z-10"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     onClick={() => handleEdit(job)}
                     className="text-blue-500 hover:underline"
@@ -150,11 +169,14 @@ const JobList = ({ jobs, searchTerm }) => {
               )}
 
               {isEditing && (
-                <div className="mt-4">
+                <div className="mt-4" onClick={(e) => e.stopPropagation()}>
                   <JobForm isEdit initialData={job} onSubmit={handleUpdate} />
                   <button
                     className="mt-2 text-gray-500 hover:underline text-sm"
-                    onClick={() => setEditingJobId(null)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingJobId(null);
+                    }}
                   >
                     Cancel Edit
                   </button>
