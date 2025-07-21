@@ -8,11 +8,16 @@ const JobForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
     location: "",
     salary: "",
     type: "Full-time",
+    category: "Tech",
+    tags: "",
   });
 
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
-      setForm(initialData);
+      setForm({
+        ...initialData,
+        tags: initialData.tags?.join(", ") || "",
+      });
     }
   }, [initialData]);
 
@@ -22,7 +27,18 @@ const JobForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+
+    const jobData = {
+      ...form,
+      salary: Number(form.salary),
+      tags: form.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+    };
+
+    onSubmit(jobData);
+
     setForm({
       title: "",
       description: "",
@@ -30,6 +46,8 @@ const JobForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
       location: "",
       salary: "",
       type: "Full-time",
+      category: "Tech",
+      tags: "",
     });
   };
 
@@ -50,6 +68,7 @@ const JobForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
         required
         className="w-full border px-4 py-2 rounded"
       />
+
       <input
         name="company"
         placeholder="Company"
@@ -58,6 +77,7 @@ const JobForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
         required
         className="w-full border px-4 py-2 rounded"
       />
+
       <input
         name="location"
         placeholder="Location"
@@ -66,8 +86,10 @@ const JobForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
         required
         className="w-full border px-4 py-2 rounded"
       />
+
       <input
         name="salary"
+        type="number"
         placeholder="Salary"
         value={form.salary}
         onChange={handleChange}
@@ -83,9 +105,31 @@ const JobForm = ({ onSubmit, initialData = {}, isEdit = false }) => {
       >
         <option value="Full-time">Full-time</option>
         <option value="Part-time">Part-time</option>
-        <option value="Remote">Remote</option>
-        <option value="Hybrid">Hybrid</option>
+        <option value="Contract">Contract</option>
+        <option value="Internship">Internship</option>
       </select>
+
+      <select
+        name="category"
+        value={form.category}
+        onChange={handleChange}
+        className="w-full border px-4 py-2 rounded"
+      >
+        <option value="Tech">Tech</option>
+        <option value="Design">Design</option>
+        <option value="Sales">Sales</option>
+        <option value="Marketing">Marketing</option>
+        <option value="HR">HR</option>
+        <option value="Finance">Finance</option>
+      </select>
+
+      <input
+        name="tags"
+        placeholder="Tags (comma separated)"
+        value={form.tags}
+        onChange={handleChange}
+        className="w-full border px-4 py-2 rounded"
+      />
 
       <textarea
         name="description"

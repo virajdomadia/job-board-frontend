@@ -15,10 +15,21 @@ const JobFilters = ({ fetchJobs }) => {
       ...(type && { type }),
       ...(category && { category }),
       ...(location && { location }),
-      ...(sortOrder && { sort: sortOrder }),
-      ...(salaryMin && { salaryMin }),
-      ...(salaryMax && { salaryMax }),
+      ...(salaryMin && { minSalary: salaryMin }),
+      ...(salaryMax && { maxSalary: salaryMax }),
     };
+
+    // Handle sort logic
+    if (sortOrder === "asc") {
+      filters.sortBy = "salary";
+      filters.order = "asc";
+    } else if (sortOrder === "desc") {
+      filters.sortBy = "salary";
+      filters.order = "desc";
+    } else if (sortOrder === "date") {
+      filters.sortBy = "createdAt";
+      filters.order = "desc";
+    }
 
     fetchJobs(filters);
   };
