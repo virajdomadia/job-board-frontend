@@ -4,20 +4,18 @@ import { useAuthContext } from "../../context/AuthContext";
 import JobForm from "./JobForm";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { checkIfAlreadyApplied } from "../../services/applicationApi";
 
-const JobList = ({ jobs, searchTerm }) => {
+const JobList = ({ jobs }) => {
   const [layout, setLayout] = useState("grid");
   const [editingJobId, setEditingJobId] = useState(null);
+  const [appliedJobIds, setAppliedJobIds] = useState([]);
   const { deleteJob, updateJob, fetchJobs } = useJobContext();
   const { user } = useAuthContext();
   const navigate = useNavigate();
 
   const loggedInUser = user;
   const userId = loggedInUser?.id;
-
-  if (!user || !loggedInUser) {
-    return <div className="text-center py-10">Loading user data...</div>;
-  }
 
   const isOwner = (job) => {
     const jobEmployerId = job.employerId?._id || job.employerId;
@@ -60,6 +58,33 @@ const JobList = ({ jobs, searchTerm }) => {
     return () => clearInterval(interval);
   }, [fetchJobs]);
 
+  useEffect(() => {
+    const fetchAppliedStatuses = async () => {
+      if (!loggedInUser || loggedInUser.role !== "seeker" || !jobs.length)
+        return;
+
+      const results = await Promise.allSettled(
+        jobs.map((job) => checkIfAlreadyApplied(job._id))
+      );
+
+      const applied = jobs
+        .filter(
+          (_, i) =>
+            results[i].status === "fulfilled" &&
+            results[i].value?.data?.applied === true
+        )
+        .map((job) => job._id);
+
+      setAppliedJobIds(applied);
+    };
+
+    fetchAppliedStatuses();
+  }, [jobs, loggedInUser]);
+
+  if (!user) {
+    return <div className="text-center py-10">Loading user data...</div>;
+  }
+
   if (!jobs.length) {
     return <div className="text-center">No jobs available at the moment.</div>;
   }
@@ -91,7 +116,7 @@ const JobList = ({ jobs, searchTerm }) => {
         </div>
 
         <button
-          onClick={() => fetchJobs()}
+          onClick={fetchJobs}
           className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
         >
           🔄 Refresh Jobs
@@ -108,6 +133,7 @@ const JobList = ({ jobs, searchTerm }) => {
         {jobs.map((job) => {
           const owner = isOwner(job);
           const isEditing = editingJobId === job._id;
+          const alreadyApplied = appliedJobIds.includes(job._id);
 
           return (
             <div
@@ -140,10 +166,15 @@ const JobList = ({ jobs, searchTerm }) => {
 
                 {loggedInUser.role === "seeker" && (
                   <button
-                    onClick={() => toast.success("Apply Now clicked!")}
-                    className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                    onClick={() => navigate(`/job/${job._id}`)}
+                    disabled={alreadyApplied}
+                    className={`px-3 py-1 rounded text-sm ${
+                      alreadyApplied
+                        ? "bg-gray-400 cursor-not-allowed text-white"
+                        : "bg-green-600 text-white hover:bg-green-700"
+                    }`}
                   >
-                    Apply Now
+                    {alreadyApplied ? "Already Applied" : "Apply Now"}
                   </button>
                 )}
               </div>
