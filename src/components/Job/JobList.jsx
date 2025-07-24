@@ -71,7 +71,7 @@ const JobList = ({ jobs }) => {
         .filter(
           (_, i) =>
             results[i].status === "fulfilled" &&
-            results[i].value?.data?.applied === true
+            results[i].value?.data?.alreadyApplied === true // 🛠️ Fix key here
         )
         .map((job) => job._id);
 
@@ -116,7 +116,10 @@ const JobList = ({ jobs }) => {
         </div>
 
         <button
-          onClick={fetchJobs}
+          onClick={async () => {
+            await fetchJobs();
+            await fetchAppliedStatuses(); // ✅ Now refreshes both
+          }}
           className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
         >
           🔄 Refresh Jobs
